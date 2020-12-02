@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:id="@+id/vg_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/tips_dialog_layout">
+
+
+    <TextView
+        android:id="@+id/tv_tip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:paddingLeft="46dp"
+        android:paddingTop="76dp"
+        android:paddingRight="46dp"
+        android:paddingBottom="76dp"
+        android:textColor="#000000"
+        android:textSize="@dimen/tipDialog_body_textSize"
+        tool:text="@string/permission_tip" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/tv_tip"
+        android:background="#e6e6e6" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="74dp"
+        android:layout_below="@id/line"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/cancel"
+            android:textColor="#000000"
+            android:textSize="@dimen/tipDialog_btn_textSize" />
+
+        <View
+            android:id="@+id/diving"
+            android:layout_width="1dp"
+            android:layout_height="74dp"
+            android:background="#e6e6e6" />
+
+        <TextView
+            android:id="@+id/btn_confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/confirm"
+            android:textColor="#000000"
+            android:textSize="@dimen/tipDialog_btn_textSize" />
+    </LinearLayout>
+</RelativeLayout>
