@@ -19,7 +19,7 @@
         android:paddingBottom="76dp"
         android:textColor="#000000"
         android:textSize="@dimen/tipDialog_body_textSize"
-        tool:text="@string/permission_tip" />
+        tool:text="确定删除？" />
 
     <View
         android:id="@+id/line"

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 
-import com.taichuan.code.mvp.view.PermissionBaseDialogFragment;
+import com.taichuan.code.mvp.view.permission.PermissionBaseDialogFragment;
 
 import androidx.annotation.Nullable;
 import me.yokeyword.fragmentation.ExtraTransaction;

@@ -3,7 +3,6 @@ package com.taichuan.code.mvp.view.base;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,8 +16,10 @@ import android.widget.Toast;
 import com.taichuan.code.app.AppGlobal;
 import com.taichuan.code.lifecycle.LifeCycle;
 import com.taichuan.code.mvp.view.support.MySupportFragment;
+import com.taichuan.code.mvp.view.viewimpl.CancelAble;
 import com.taichuan.code.mvp.view.viewimpl.ViewBaseInterface;
 import com.taichuan.code.ui.dialog.TipDialog;
+import com.taichuan.code.utils.TipDialogCreator;
 import com.taichuan.code.utils.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -42,7 +43,7 @@ import retrofit2.Call;
  * Fragment基类，如果不需要MVP模式，可继承此类<br>
  * 实现了tipDialog、toast等相关方法
  */
-public abstract class BaseFragment extends MySupportFragment implements ViewBaseInterface, LifeCycle {
+public abstract class BaseFragment extends MySupportFragment implements ViewBaseInterface, LifeCycle, CancelAble {
     protected final String TAG = getClass().getSimpleName().replace("Fragment", "Fra");
     protected Activity mActivity;
     /*** 订阅切断者容器 */
@@ -58,6 +59,7 @@ public abstract class BaseFragment extends MySupportFragment implements ViewBase
     protected boolean isFragmentPrepared = false;
     protected boolean isFragmentFirstLoad = true;
     protected MyHandler mHandler;
+    private TipDialogCreator tipDialogCreator;
 
     protected static class MyHandler extends Handler {
         private WeakReference<BaseFragment> weak;
@@ -75,6 +77,13 @@ public abstract class BaseFragment extends MySupportFragment implements ViewBase
 
     protected void handleMessage(Message msg) {
 
+    }
+
+    @Override
+    public void toCancel() {
+        if (getFragmentManager() != null) {
+            getFragmentManager().popBackStack();
+        }
     }
 
     protected boolean useEventBus() {
@@ -125,6 +134,7 @@ public abstract class BaseFragment extends MySupportFragment implements ViewBase
         if (useEventBus()) {
             EventBus.getDefault().register(this);
         }
+        tipDialogCreator = new TipDialogCreator(getContext(), this);
         //
         onBindView(savedInstanceState, rootView);
         isFragmentPrepared = true;
@@ -298,24 +308,7 @@ public abstract class BaseFragment extends MySupportFragment implements ViewBase
     @Override
     public void showTipDialog(String tipMsg, final boolean isFinishWhenCancel, boolean canceledOnTouchOutside, String cancelString, String confirmString, TipDialog.TipClickCallBack tipClickCallBack) {
         if (getContext() != null) {
-            TipDialog tipDialog = new TipDialog(getContext());
-            tipDialog.setTipClickCallBack(tipClickCallBack);
-            tipDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
-            tipDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    if (isFinishWhenCancel && getFragmentManager() != null) {
-                        getFragmentManager().popBackStack();
-                    }
-                }
-            });
-            tipDialog.setTipText(tipMsg);
-            tipDialog.setButtonText(cancelString, confirmString);
-            try {
-                tipDialog.show();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            tipDialogCreator.showTipDialog(tipMsg, isFinishWhenCancel, canceledOnTouchOutside, cancelString, confirmString, tipClickCallBack);
         }
     }
 

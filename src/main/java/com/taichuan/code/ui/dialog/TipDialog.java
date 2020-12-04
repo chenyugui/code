@@ -46,10 +46,10 @@ public class TipDialog extends BaseDialog {
     @Override
     protected Object setRootLayout() {
         Integer tipDialogLayout = AppGlobal.getConfiguration(ConfigType.TIP_DIALOG_LAYOUT);
-        if (tipDialogLayout == null) {
-            return R.layout.dialog_tip;
-        } else {
+        if (tipDialogLayout != null) {
             return tipDialogLayout;
+        } else {
+            return R.layout.dialog_tip;
         }
     }
 
@@ -111,7 +111,6 @@ public class TipDialog extends BaseDialog {
 
     @Override
     protected void onBindView(@Nullable Bundle savedInstanceState) {
-        setCanceledOnTouchOutside(false);
     }
 
 
@@ -142,5 +141,4 @@ public class TipDialog extends BaseDialog {
     public void setTipClickCallBack(TipClickCallBack tipClickCallBack) {
         mTipClickCallBack = tipClickCallBack;
     }
-
 }

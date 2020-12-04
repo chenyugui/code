@@ -3,7 +3,7 @@ package com.taichuan.code.mvp.view.support;
 import android.os.Bundle;
 import android.view.MotionEvent;
 
-import com.taichuan.code.mvp.view.PermissionBaseActivity;
+import com.taichuan.code.mvp.view.permission.PermissionBaseActivity;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
@@ -20,7 +20,8 @@ import me.yokeyword.fragmentation_swipeback.core.ISwipeBackActivity;
 import me.yokeyword.fragmentation_swipeback.core.SwipeBackActivityDelegate;
 
 /**
- * Created by gui on 2017/7/17.
+ * @author gui
+ * @date 2017/7/17
  * fragmentation框架需要的SupportActivity
  */
 public class MySupportActivity extends PermissionBaseActivity implements ISupportActivity, ISwipeBackActivity {

@@ -3,7 +3,6 @@ package com.taichuan.code.mvp.view.base;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -42,14 +41,12 @@ import retrofit2.Call;
  */
 public abstract class BaseActivity extends MySupportActivity implements ViewBaseInterface, LifeCycle {
     protected BaseActivity mInstance;
-    private TipDialog tipDialog;
     @SuppressWarnings("unused")
     protected MyHandler mHandler;
     /*** 订阅切断者容器 */
     private CompositeDisposable compositeDisposable;
     /*** 存放Retrofit2请求的call列表，用于onDestroy的时候进行cancel */
     private List<Call> callList;
-
 
     @SuppressWarnings("WeakerAccess")
     protected static class MyHandler extends Handler {
@@ -209,39 +206,29 @@ public abstract class BaseActivity extends MySupportActivity implements ViewBase
 
     @Override
     public void showTipDialog(String tipMsg, TipDialog.TipClickCallBack tipClickCallBack) {
-        showTipDialog(tipMsg, false, false, null, null, tipClickCallBack);
+        showTipDialog(tipMsg, false, false,
+                null, null, tipClickCallBack);
     }
 
     @Override
     public void showTipDialog(String tipMsg, boolean canceledOnTouchOutside, TipDialog.TipClickCallBack tipClickCallBack) {
-        showTipDialog(tipMsg, false, canceledOnTouchOutside, null, null, tipClickCallBack);
+        showTipDialog(tipMsg, false, canceledOnTouchOutside,
+                null, null, tipClickCallBack);
     }
 
     @Override
-    public void showTipDialog(String tipMsg, boolean canceledOnTouchOutside, String cancelString, String confirmString, TipDialog.TipClickCallBack tipClickCallBack) {
-        showTipDialog(tipMsg, false, canceledOnTouchOutside, cancelString, confirmString, tipClickCallBack);
+    public void showTipDialog(String tipMsg, boolean canceledOnTouchOutside, String cancelString,
+                              String confirmString, TipDialog.TipClickCallBack tipClickCallBack) {
+        showTipDialog(tipMsg, false, canceledOnTouchOutside,
+                cancelString, confirmString, tipClickCallBack);
     }
 
     @Override
-    public void showTipDialog(String tipMsg, final boolean isFinishWhenCancel, boolean canceledOnTouchOutside, String cancelString, String confirmString, TipDialog.TipClickCallBack tipClickCallBack) {
-        tipDialog = new TipDialog(this);
-        tipDialog.setTipClickCallBack(tipClickCallBack);
-        tipDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
-        tipDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                if (isFinishWhenCancel) {
-                    finish();
-                }
-            }
-        });
-        tipDialog.setTipText(tipMsg);
-        tipDialog.setButtonText(cancelString, confirmString);
-        try {
-            tipDialog.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void showTipDialog(String tipMsg, final boolean isFinishWhenCancel,
+                              boolean canceledOnTouchOutside, String cancelString,
+                              String confirmString, TipDialog.TipClickCallBack tipClickCallBack) {
+        tipDialogCreator.showTipDialog(tipMsg, isFinishWhenCancel, canceledOnTouchOutside,
+                cancelString, confirmString, tipClickCallBack);
     }
 
     @SuppressWarnings("unused")

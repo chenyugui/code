@@ -3,7 +3,6 @@ package com.taichuan.code.mvp.view.base;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,8 +10,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.taichuan.code.lifecycle.LifeCycle;
+import com.taichuan.code.mvp.view.viewimpl.CancelAble;
 import com.taichuan.code.mvp.view.viewimpl.ViewBaseInterface;
 import com.taichuan.code.ui.dialog.TipDialog;
+import com.taichuan.code.utils.TipDialogCreator;
 import com.taichuan.code.utils.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -30,13 +31,14 @@ import retrofit2.Call;
  * @author gui
  * @date 2018/12/20
  */
-public abstract class BaseDialog extends Dialog implements ViewBaseInterface, LifeCycle {
+public abstract class BaseDialog extends Dialog implements ViewBaseInterface, LifeCycle, CancelAble {
     protected final String TAG = getClass().getSimpleName();
 
     /*** 订阅切断者容器 */
     private CompositeDisposable compositeDisposable;
     /*** 存放Retrofit2请求的call列表，用于onDestroy的时候进行cancel */
     private List<Call> callList;
+    private TipDialogCreator tipDialogCreator;
 
     public BaseDialog(@NonNull Context context) {
         super(context);
@@ -48,6 +50,11 @@ public abstract class BaseDialog extends Dialog implements ViewBaseInterface, Li
 
     protected BaseDialog(@NonNull Context context, boolean cancelable, @Nullable OnCancelListener cancelListener) {
         super(context, cancelable, cancelListener);
+    }
+
+    @Override
+    public void toCancel() {
+        cancel();
     }
 
     @Override
@@ -66,6 +73,7 @@ public abstract class BaseDialog extends Dialog implements ViewBaseInterface, Li
             throw new RuntimeException("setChildContentView type err");
         }
         setContentView(rootView);
+        tipDialogCreator = new TipDialogCreator(getContext(), this);
 
         initView();
         initListener();
@@ -144,24 +152,7 @@ public abstract class BaseDialog extends Dialog implements ViewBaseInterface, Li
 
     @Override
     public void showTipDialog(String tipMsg, final boolean isFinishWhenCancel, boolean canceledOnTouchOutside, String cancelString, String confirmString, TipDialog.TipClickCallBack tipClickCallBack) {
-        TipDialog tipDialog = new TipDialog(getContext());
-        tipDialog.setTipClickCallBack(tipClickCallBack);
-        tipDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
-        tipDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                if (isFinishWhenCancel) {
-                    cancel();
-                }
-            }
-        });
-        tipDialog.setTipText(tipMsg);
-        tipDialog.setButtonText(cancelString, confirmString);
-        try {
-            tipDialog.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        tipDialogCreator.showTipDialog(tipMsg, isFinishWhenCancel, canceledOnTouchOutside, cancelString, confirmString, tipClickCallBack);
     }
 
     private void showToast(CharSequence text, int time) {
@@ -198,5 +189,4 @@ public abstract class BaseDialog extends Dialog implements ViewBaseInterface, Li
         }
         callList.add(call);
     }
-
 }

@@ -94,7 +94,7 @@ RestClient.builder()
         .post();// 进行post请求
 ```
 
-## 三. 6.0动态权限获取
+## 三. andrioid6.0动态权限获取封装
 待说明
 
 ## 四. 7.0 FileProvider

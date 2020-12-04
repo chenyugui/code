@@ -6,7 +6,8 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 /**
- * Created by gui on 2017/11/2.
+ * @author gui
+ * @date 2017/11/2
  */
 public class PermissionUtil {
     private static final String TAG = "PermissionUtil";

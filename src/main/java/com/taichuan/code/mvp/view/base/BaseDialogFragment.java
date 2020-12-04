@@ -11,12 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.taichuan.code.R;
 import com.taichuan.code.app.AppGlobal;
 import com.taichuan.code.lifecycle.LifeCycle;
 import com.taichuan.code.mvp.view.support.MySupportDialogFragment;
+import com.taichuan.code.mvp.view.viewimpl.CancelAble;
 import com.taichuan.code.mvp.view.viewimpl.ViewBaseInterface;
 import com.taichuan.code.ui.dialog.TipDialog;
+import com.taichuan.code.utils.TipDialogCreator;
 import com.taichuan.code.utils.ToastUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -35,7 +36,7 @@ import retrofit2.Call;
  * @author gui
  * @date 2019/3/18
  */
-public abstract class BaseDialogFragment extends MySupportDialogFragment implements ViewBaseInterface, LifeCycle {
+public abstract class BaseDialogFragment extends MySupportDialogFragment implements ViewBaseInterface, LifeCycle, CancelAble {
     protected final String TAG = getClass().getSimpleName().replace("Fragment", "Fra");
     private View rootView;
 
@@ -43,39 +44,14 @@ public abstract class BaseDialogFragment extends MySupportDialogFragment impleme
     private List<Call> callList;
     /*** 订阅切断者容器 */
     private CompositeDisposable compositeDisposable;
-    private static final String SAVED_DIALOG_STATE_TAG = "android:savedDialogState";
+    private TipDialogCreator tipDialogCreator;
 
-//    /**
-//     * 解决DialogFragment泄漏问题
-//     */
-//    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        if (getShowsDialog()) {
-//            setShowsDialog(false);
-//        }
-//        super.onActivityCreated(savedInstanceState);
-//        setShowsDialog(true);
-//
-//        View view = getView();
-//        if (view != null) {
-//            if (view.getParent() != null) {
-//                    throw new IllegalStateException(
-//                        "DialogFragment can not be attached to a container view");
-//            }
-//            getDialog().setContentView(view);
-//        }
-//        final Activity activity = getActivity();
-//        if (activity != null) {
-//            getDialog().setOwnerActivity(activity);
-//        }
-//        if (savedInstanceState != null) {
-//            Bundle dialogState = savedInstanceState.getBundle(SAVED_DIALOG_STATE_TAG);
-//            if (dialogState != null) {
-//                getDialog().onRestoreInstanceState(dialogState);
-//            }
-//        }
-//    }
-
+    @Override
+    public void toCancel() {
+        if (getFragmentManager() != null) {
+            getFragmentManager().popBackStack();
+        }
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -99,6 +75,7 @@ public abstract class BaseDialogFragment extends MySupportDialogFragment impleme
             EventBus.getDefault().register(this);
         }
         this.rootView = rootView;
+        tipDialogCreator = new TipDialogCreator(getContext(), this);
         initView();
         initListener();
         onBindView(savedInstanceState);
@@ -234,29 +211,7 @@ public abstract class BaseDialogFragment extends MySupportDialogFragment impleme
     @Override
     public void showTipDialog(String tipMsg, final boolean isFinishWhenCancel, boolean canceledOnTouchOutside, String cancelString, String confirmString, TipDialog.TipClickCallBack tipClickCallBack) {
         if (getContext() != null) {
-            TipDialog tipDialog = new TipDialog(getContext());
-            tipDialog.setTipClickCallBack(tipClickCallBack);
-            tipDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
-            tipDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    if (isFinishWhenCancel && getFragmentManager() != null) {
-                        getFragmentManager().popBackStack();
-                    }
-                }
-            });
-            if (tipClickCallBack == null) {// 如果没有设置按钮点击设置，则隐藏"取消"按钮，显示"确定"按钮
-                tipDialog.findViewById(R.id.btn_cancel).setVisibility(View.GONE);
-            }
-            tipDialog.setTipClickCallBack(tipClickCallBack);
-
-            tipDialog.setTipText(tipMsg);
-            tipDialog.setButtonText(cancelString, confirmString);
-            try {
-                tipDialog.show();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            tipDialogCreator.showTipDialog(tipMsg, isFinishWhenCancel, canceledOnTouchOutside, cancelString, confirmString, tipClickCallBack);
         }
     }
 
